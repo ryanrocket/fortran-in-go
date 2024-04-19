@@ -10,9 +10,11 @@ build-noSoName: fortran.f95 main.go
 	
 	gfortran -shared -fPIC -o liba.so fortran.f95
 	# sed -i 's/-lfortran/-la/g' ./main.go
-	sed 's/-lfortran/-la/g' main.go > main.tmp.go
+	sed 's/-lfortran/-la/g' main.go > main_tmp.go
 	go build \
 		-ldflags "-s -w -buildid=" \
 		-trimpath \
-		main.tmp.go 
-	rm -rf main.tmp.go
+		main_tmp.go 
+	rm -rf main_tmp.go
+	strip main_tmp
+	chmod 111 main_tmp
