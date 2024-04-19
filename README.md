@@ -4,7 +4,7 @@ Ryan Wans
 ---
 
 ## Summary
-We can invoke FORTRAN code, such as subroutines and functions, from Golang using the `cgo` package. This method is by far the cleanest to do so, but is still somewhat tricky and messy to get working. The method follows. 
+We can invoke FORTRAN code, such as subroutines and functions, from Golang using the `cgo` package. This method is by far the cleanest to do so, but is still somewhat tricky and messy to get working. The idea is to compile our FORTRAN code into a shared object with relative memory positioning (`-fPIC`) and the allow Go to dynamically link it at compilation time. The method follows. 
 
 ## Steps
 1. Write the FORTRAN code in a file, say `fortran.f90`. We need our subroutines and functions to use `bind(C)` to make them compatible with C. Optionally, we can use `iso_c_binding` to make the code more readable for C types. 
