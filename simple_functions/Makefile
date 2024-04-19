@@ -15,4 +15,4 @@ build-noSoName: fortran.f95 main.go
 		-ldflags "-s -w -buildid=" \
 		-trimpath \
 		main.tmp.go 
-	rm main.tmp.go
+	rm -rf main.tmp.go
