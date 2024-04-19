@@ -1,6 +1,6 @@
 package main
 
-// #cgo LDFLAGS: bruh.o -L/opt/homebrew/opt/gcc/lib/gcc/13 -lgfortran
+// #cgo LDFLAGS: -L. -lfortran
 // void hello();
 import (
 	"C"
