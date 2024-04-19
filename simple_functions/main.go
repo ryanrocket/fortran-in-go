@@ -1,6 +1,6 @@
 package main
 
-// #cgo LDFLAGS: -L. -lfortran
+// #cgo LDFLAGS: -L. -la
 // int multiply(int, int);
 // void arrayByHundred(double*, int*);
 // void arrayWoBind(double*, int*);
