@@ -17,3 +17,12 @@ subroutine arrayByHundred( arr, n ) bind(C, name="arrayByHundred")
 
         arr(:) = arr(:) * 100.0d0
 end subroutine
+
+subroutine arrayWoBind( arr, n ) bind(C, name="arrayWoBind")
+        implicit none
+
+        integer :: n
+        double precision, dimension(n) :: arr
+
+        arr(:) = arr(:) * 2.0d0
+end subroutine
