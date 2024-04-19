@@ -4,7 +4,7 @@ Ryan Wans
 ---
 
 ## Summary
-We can invoke FORTRAN code, such as subroutines and functions, from Golang using the `cgo` package. This method is by far the cleanest to do so, but is still somewhat tricky and messy to get working. The idea is to compile our FORTRAN code into a shared object with relative memory positioning (`-fPIC`) and the allow Go to dynamically link it at compilation time. The method follows. 
+We can invoke FORTRAN code, such as subroutines and functions, from Golang using the `cgo` package. This method is by far the cleanest to do so, but is still somewhat tricky and messy to get working. The idea is to compile our FORTRAN code into a shared object with relative memory positioning (`-fPIC`) and allow Go to dynamically link it at compilation time. The method follows. 
 
 ## Steps
 1. Write the FORTRAN code in a file, say `fortran.f90`. We need our subroutines and functions to use `bind(C)` to make them compatible with C. Optionally, we can use `iso_c_binding` to make the code more readable for C types. 
@@ -14,7 +14,7 @@ We can invoke FORTRAN code, such as subroutines and functions, from Golang using
 5. To use the subroutine of function, we simply call it as if it were a C function. For example, we could call `C.hello()`.
 6. We can now build and run our Golang code.
 
-## Alternative Linking
+## Alternative (Better) Linking
 Instead of linking to the absolute path of the GCC library, we can create a shared object file from the fortran source using `gfortran -shared -fPIC -o libfortran.so fortran.f90`. We can then link to this shared object file using `// #cgo LDFLAGS: -L. -lfortran`.
 
 This method is cleaner and more portable, but requires at least the relative path to the shared object file. If we are using multiple fortran files, we can compile them all into a single shared object file using `gfortran -shared -fPIC -o libfortran.so fortran1.f90 fortran2.f90 ...`.
