@@ -18,3 +18,6 @@ We can invoke FORTRAN code, such as subroutines and functions, from Golang using
 Instead of linking to the absolute path of the GCC library, we can create a shared object file from the fortran source using `gfortran -shared -fPIC -o libfortran.so fortran.f90`. We can then link to this shared object file using `// #cgo LDFLAGS: -L. -lfortran`.
 
 This method is cleaner and more portable, but requires at least the relative path to the shared object file. If we are using multiple fortran files, we can compile them all into a single shared object file using `gfortran -shared -fPIC -o libfortran.so fortran1.f90 fortran2.f90 ...`.
+
+## Security, Obfuscastion
+There are a few reverse engineering countermeasures that can be taken. The first and most obvious would be to `strip` the final Go executeable of anything symbolic. Of course, the architecture (e.g. `mach-o arm64` on MacOS) will still be exposed. We can radix/trie our literals as well, although I'm unsure of anyway to _completely_ encrypt or prevent access to these. Compilation of the FORTRAN code with optimization (e.g. `-Os` for `gfortran`) can also do a number on the reverse engineering process. Lastly, we can do our best to revoke read permissions on the executable, although this is environment-dependent. I'll be looking into more countermeasures to this end. 
