@@ -1,6 +1,7 @@
 package main
 
-// #cgo LDFLAGS: -L. -lfortran
+// #cgo CFLAGS: -I${SRCDIR}
+// #cgo LDFLAGS: -L${SRCDIR} -Wl,-rpath=\$ORIGIN -lfortran
 // int multiply(int, int);
 // void arrayByHundred(double*, int*);
 // void arrayWoBind(double*, int*);

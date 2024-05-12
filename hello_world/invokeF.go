@@ -1,6 +1,7 @@
 package main
 
-// #cgo LDFLAGS: -L. -lfortran
+// #cgo CFLAGS: -I${SRCDIR}
+// #cgo LDFLAGS: -L${SRCDIR} -Wl,-rpath=\$ORIGIN -lfortran
 // void hello();
 import (
 	"C"
