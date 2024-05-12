@@ -1,7 +1,4 @@
 # FORTRAN in Golang
-Ryan Wans
-
----
 
 ## Summary
 We can invoke FORTRAN code, such as subroutines and functions, from Golang using the `cgo` package. This method is by far the cleanest to do so, but is still somewhat tricky and messy to get working. The idea is to compile our FORTRAN code into a shared object with relative memory positioning (`-fPIC`) and allow Go to dynamically link it at compilation time. The method follows. 
