@@ -2,41 +2,38 @@ module MatrixModule
     use iso_c_binding
     implicit none
 
-    type, bind(C) :: Matrix
-        integer(c_int) :: rows
-        integer(c_int) :: cols
-        type(c_ptr) :: data
-    end type
-
 contains
 
-    function multiply( a, b ) result( c ) bind(C, name="multiply")        
+    function tester( a, b ) result( c ) bind(C, name="tester")
         use iso_c_binding
         implicit none
 
-        type(Matrix), intent(in) :: a, b
-        type(Matrix) :: c
-        integer(c_int) :: i, j, k
-        real(c_double), dimension(:,:), pointer :: a_data, b_data, c_data
-        real(c_double) :: sum
+        integer(c_int), intent(in), value :: a, b
+        integer(c_int) :: c
 
-        c%rows = a%rows
-        c%cols = b%cols
-        allocate(c_data(c%rows, c%cols))
+        print *, "Hello from tester"
 
-        call c_f_pointer(a%data, a_data, [a%rows, a%cols])
-        call c_f_pointer(b%data, b_data, [b%rows, b%cols])
-        call c_f_pointer(c%data, c_data, [c%rows, c%cols])
+        c = a + b
+    end function tester
 
-        do i = 1, c%rows
-            do j = 1, c%cols
-                sum = 0.0_c_double
-                do k = 1, a%cols
-                    sum = sum + a_data(i,k) * b_data(k,j)
-                end do
-                c_data(i,j) = sum
-            end do
-        end do
-    end function
+    subroutine multiply( a, b, m1, c, d, m2, mo ) bind(C, name="multiply")
+        use iso_c_binding
+        implicit none
+
+        integer(c_int), intent(in), value :: a, b, c, d
+        real(c_double), dimension(a*b), intent(in) :: m1
+        real(c_double), dimension(c*d), intent(in) :: m2
+        real(c_double), dimension(a, d), intent(out) :: mo
+        integer :: i, j, k
+
+        ! Print the address of the matrices
+        print *, "Address of Matrix A: ", loc(m1)
+        print *, "Address of Matrix B: ", loc(m2)
+        print *, "Address of Matrix AxB: ", loc(mo)
+
+        ! Perform the matrix multiplication
+        mo = matmul(reshape(m1, (/a, b/)), reshape(m2, (/c, d/)))
+
+    end subroutine multiply
 
 end module MatrixModule

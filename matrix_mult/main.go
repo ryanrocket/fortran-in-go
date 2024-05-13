@@ -4,25 +4,20 @@ package main
 #include <stdlib.h>
 #cgo CFLAGS: -I${SRCDIR}/lib
 #cgo LDFLAGS: -L${SRCDIR}/lib -Wl,-rpath=\$ORIGIN/lib -lmultiply
-struct Matrix {
-	int rows;
-	int cols;
-	double *data;
-};
-struct Matrix multiply(struct Matrix, struct Matrix);
+int tester(int, int);
+void multiply(int, int, double*, int, int, double*, double*);
 */
 import "C"
 import (
 	"fmt"
 	"math/rand"
-	"unsafe"
 )
 
 // Define matrix data type
 type Matrix struct {
 	rows int
 	cols int
-	data []float64 // Use C.double to match the C data type
+	data []C.double // Use C.double to match the C data type
 }
 
 // Create a new, empty matrix
@@ -30,7 +25,7 @@ func NewMatrix(rows, cols int) *Matrix {
 	return &Matrix{
 		rows: rows,
 		cols: cols,
-		data: make([]float64, rows*cols), // Use C.double to match the C data type
+		data: make([]C.double, rows*cols), // Use C.double to match the C data type
 	}
 }
 
@@ -38,7 +33,7 @@ func NewMatrix(rows, cols int) *Matrix {
 func (m *Matrix) Randomize() {
 	for i := 0; i < m.rows*m.cols; i++ {
 		randInt := rand.Intn(10)
-		m.data[i] = float64(randInt % 10)
+		m.data[i] = C.double(randInt % 10)
 	}
 }
 
@@ -54,30 +49,13 @@ func (m *Matrix) Print() {
 
 // Wrapper for C.multiply function
 func Multiply(a, b *Matrix) *Matrix {
-	if a.cols != b.rows {
-		panic("Invalid matrix dimensions for multiplication!")
-	}
+	// Create a new matrix to store the result
+	result := NewMatrix(a.rows, b.cols)
 
-	c := C.multiply(C.struct_Matrix{
-		rows: C.int(a.rows),
-		cols: C.int(b.cols),
-		data: (*C.double)(unsafe.Pointer(&a.data[0])),
-	}, C.struct_Matrix{
-		rows: C.int(b.rows),
-		cols: C.int(b.cols),
-		data: (*C.double)(unsafe.Pointer(&b.data[0])),
-	})
+	// Call C.multiply function
+	C.multiply(C.int(a.rows), C.int(b.cols), &a.data[0], C.int(a.rows), C.int(b.cols), &b.data[0], &result.data[0])
 
-	return &Matrix{
-		rows: int(c.rows),
-		cols: int(c.cols),
-		data: (*[1 << 30]float64)(unsafe.Pointer(c.data))[: c.rows*c.cols : c.rows*c.cols], // Convert C array to Go slice
-	}
-}
-
-// Free allocated memory
-func (m *Matrix) Free() {
-	C.free(unsafe.Pointer(&m.data[0]))
+	return result
 }
 
 // Create two matrices, populate them, and print them
@@ -96,11 +74,21 @@ func main() {
 	fmt.Println("Matrix B:")
 	b.Print()
 
+	// Test fortran implementation
+	// out := C.tester(C.int(a.rows), C.int(b.cols))
+	// fmt.Println("Fortran test: ", out)
+
+	// Print address of matrix data
+	addrA := fmt.Sprintf("%p", &a.data[0])
+	addrB := fmt.Sprintf("%p", &b.data[0])
+
+	fmt.Println("Matrix A data address: ", addrA)
+	fmt.Println("Matrix B data address: ", addrB)
+
 	// Multiply matrices
-	c := Multiply(a, b)
+	result := Multiply(a, b)
 
 	// Print result
-	fmt.Println("Matrix C (AxB):")
-	c.Print()
-	c.Free()
+	fmt.Println("Result:")
+	result.Print()
 }
